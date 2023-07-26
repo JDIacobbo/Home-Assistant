@@ -1,0 +1,62 @@
+blueprint:
+  name: Inovelli LED Color Change - Z-Wave
+  description: Create automations for Inovelli Red dimmers and switches to set their LED color. Specific to Z-Wave devices.
+  domain: automation
+  input:
+    inovelli_dimmer:
+      name: Inovelli Dimmer
+      description: List of available inovelli LZW31-SN dimmers.
+      selector:
+        target:
+          device:
+            integration: zwave_js
+            manufacturer: Inovelli
+            model: LZW31-SN
+    inovelli_switch:
+      name: Inovelli On/Off Switch
+      description: List of available inovelli LZW30-SN switches.
+      selector:
+        target:
+          device:
+            integration: zwave_js
+            manufacturer: Inovelli
+            model: LZW30-SN
+
+    color:
+      name: Color
+      description: 
+        "Select the LED Color - 
+        Off: 0 |
+        Red: 1 |
+        Orange: 21 |
+        Yellow: 42 |
+        Green: 85 |
+        Cyan: 127 |
+        Teal: 145 |
+        Blue: 170 |
+        Purple: 195 |
+        Light Pink: 220 |
+        Pink: 234 |
+        White: 255"
+      selector:
+          number:
+              min: 0
+              max: 255
+
+variables:
+  color: !input color
+
+trigger: []
+
+action:
+  - service: zwave_js.set_config_parameter
+    data:
+      parameter: '13'
+      value: "{{ color }}"
+    target: !input inovelli_dimmer
+
+  - service: zwave_js.set_config_parameter
+    data:
+      parameter: '5'
+      value: "{{ color }}"
+    target: !input inovelli_switch
