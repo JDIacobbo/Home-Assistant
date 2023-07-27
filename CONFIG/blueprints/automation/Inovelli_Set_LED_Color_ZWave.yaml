@@ -1,26 +1,54 @@
 blueprint:
   name: Inovelli LED Color Change - Z-Wave
-  description: Create automations for Inovelli Red dimmers and switches to set their LED color. Specific to Z-Wave devices.
+  description: Create automations for Inovelli Red dimmers and switches to set their LED color. Specific to Z-Wave devices using Z-Wave JS.
   domain: automation
   input:
     inovelli_dimmer:
       name: Inovelli Dimmer
-      description: List of available inovelli LZW31-SN dimmers.
+      description: List of available Inovelli dimmers.
+      default: {}
       selector:
         target:
           device:
-            integration: zwave_js
-            manufacturer: Inovelli
-            model: LZW31-SN
+            - integration: zwave_js
+              manufacturer: Inovelli
+              model: LZW31-SN
+            - integration: zwave_js
+              manufacturer: Inovelli
+              model: LZW31
     inovelli_switch:
       name: Inovelli On/Off Switch
-      description: List of available inovelli LZW30-SN switches.
+      description: List of available Inovelli On/Off switches.
+      default: {}
+      selector:
+        target:
+          device:
+            - integration: zwave_js
+              manufacturer: Inovelli
+              model: LZW30-SN
+            - integration: zwave_js
+              manufacturer: Inovelli
+              model: LZW30
+    inovelli_fan_light_combo:
+      name: Inovelli Fan/Light Combo
+      description: List of available Inovelli fan/fight combo switches.
+      default: {}
       selector:
         target:
           device:
             integration: zwave_js
             manufacturer: Inovelli
-            model: LZW30-SN
+            model: LZW36
+    inovelli_2_in_1:
+      name: Inovelli 2-in-1 Switch
+      description: List of available Inovelli 2-in-1 switches.
+      default: {}
+      selector:
+        target:
+          device:
+            integration: zwave_js
+            manufacturer: Inovelli
+            model: VZW31-SN
 
     color:
       name: Color
@@ -45,18 +73,77 @@ blueprint:
 
 variables:
   color: !input color
+  inovelli_dimmer: !input inovelli_dimmer
+  inovelli_switch: !input inovelli_switch
+  inovelli_fan_light_combo: !input inovelli_fan_light_combo
+  inovelli_2_in_1: !input inovelli_2_in_1
 
 trigger: []
 
 action:
-  - service: zwave_js.set_config_parameter
-    data:
-      parameter: '13'
-      value: "{{ color }}"
-    target: !input inovelli_dimmer
+- choose:
+  - conditions:
+    - condition: template
+      value_template: 'True'
+    sequence:
+      repeat:
+        for_each:
+          - inovelli_switch
+          - inovelli_dimmer
+          - inovelli_fan_light_combo
+          - inovelli_2_in_1
+        sequence:
+          choose:
+            - conditions: "{{ inovelli_dimmer|length > 0 and repeat.item == 'inovelli_dimmer' }}"
+              sequence:
+              # Set color for dimmers
+              - service: zwave_js.set_config_parameter
+                data:
+                  parameter: '13'
+                  value: "{{ color }}"
+                target: !input inovelli_dimmer
 
-  - service: zwave_js.set_config_parameter
-    data:
-      parameter: '5'
-      value: "{{ color }}"
-    target: !input inovelli_switch
+            - conditions: "{{ inovelli_switch|length > 0 and repeat.item == 'inovelli_switch' }}"
+              sequence:
+              # Set color for switches
+              - service: zwave_js.set_config_parameter
+                data:
+                  parameter: '5'
+                  value: "{{ color }}"
+                target: !input inovelli_switch
+
+            - conditions: "{{ inovelli_fan_light_combo|length > 0 and repeat.item == 'inovelli_fan_light_combo' }}"
+              sequence:
+              # Set color for Fan/Light combo light
+              - service: zwave_js.set_config_parameter
+                data:
+                  parameter: '18'
+                  value: "{{ color }}"
+                target: !input inovelli_fan_light_combo
+
+            - conditions: "{{ inovelli_fan_light_combo|length > 0 and repeat.item == 'inovelli_fan_light_combo' }}"
+              sequence:
+              # Set color for Fan/Light combo fan
+              - service: zwave_js.set_config_parameter
+                data:
+                  parameter: '20'
+                  value: "{{ color }}"
+                target: !input inovelli_fan_light_combo
+
+            - conditions: "{{ inovelli_2_in_1|length > 0  and repeat.item == 'inovelli_2_in_1' }}"
+              sequence:
+              # Set color for 2-in-1 on
+              - service: zwave_js.set_config_parameter
+                data:
+                  parameter: '95'
+                  value: "{{ color }}"
+                target: !input inovelli_2_in_1
+
+            - conditions: "{{ inovelli_2_in_1|length > 0  and repeat.item == 'inovelli_2_in_1' }}"
+              sequence:
+              # Set color for 2-in-1 off
+              - service: zwave_js.set_config_parameter
+                data:
+                  parameter: '96'
+                  value: "{{ color }}"
+                target: !input inovelli_2_in_1
