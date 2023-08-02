@@ -97,53 +97,59 @@ action:
             - conditions: "{{ inovelli_dimmer|length > 0 and repeat.item == 'inovelli_dimmer' }}"
               sequence:
               # Set color for dimmers
-              - service: zwave_js.set_config_parameter
+              - service: zwave_js.multicast_set_value
                 data:
-                  parameter: '13'
+                  command_class: '112'
+                  property: '13'
                   value: "{{ color }}"
                 target: !input inovelli_dimmer
 
             - conditions: "{{ inovelli_switch|length > 0 and repeat.item == 'inovelli_switch' }}"
               sequence:
               # Set color for switches
-              - service: zwave_js.set_config_parameter
+              - service: zwave_js.multicast_set_value
                 data:
-                  parameter: '5'
+                  command_class: '112'
+                  property: '5'
                   value: "{{ color }}"
                 target: !input inovelli_switch
 
             - conditions: "{{ inovelli_fan_light_combo|length > 0 and repeat.item == 'inovelli_fan_light_combo' }}"
               sequence:
               # Set color for Fan/Light combo light
-              - service: zwave_js.set_config_parameter
+              - service: zwave_js.multicast_set_value
                 data:
-                  parameter: '18'
+                  command_class: '112'
+                  property: '18'
                   value: "{{ color }}"
                 target: !input inovelli_fan_light_combo
 
             - conditions: "{{ inovelli_fan_light_combo|length > 0 and repeat.item == 'inovelli_fan_light_combo' }}"
               sequence:
               # Set color for Fan/Light combo fan
-              - service: zwave_js.set_config_parameter
+              - service: zwave_js.multicast_set_value
                 data:
-                  parameter: '20'
+                  command_class: '112'
+                  property: '20'
                   value: "{{ color }}"
                 target: !input inovelli_fan_light_combo
 
             - conditions: "{{ inovelli_2_in_1|length > 0  and repeat.item == 'inovelli_2_in_1' }}"
               sequence:
               # Set color for 2-in-1 on
-              - service: zwave_js.set_config_parameter
+              - service: zwave_js.multicast_set_value
                 data:
-                  parameter: '95'
+                  command_class: '112'
+                  property: '95'
                   value: "{{ color }}"
                 target: !input inovelli_2_in_1
 
             - conditions: "{{ inovelli_2_in_1|length > 0  and repeat.item == 'inovelli_2_in_1' }}"
               sequence:
               # Set color for 2-in-1 off
-              - service: zwave_js.set_config_parameter
+              - service: zwave_js.multicast_set_value
                 data:
-                  parameter: '96'
+                  command_class: '112'
+                  property: '96'
                   value: "{{ color }}"
                 target: !input inovelli_2_in_1
