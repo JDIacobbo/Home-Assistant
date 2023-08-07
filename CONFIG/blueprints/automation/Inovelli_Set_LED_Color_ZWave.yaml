@@ -1,6 +1,6 @@
 blueprint:
-  name: Inovelli LED Color Change - Z-Wave
-  description: Create automations for Inovelli Red dimmers and switches to set their LED color. Specific to Z-Wave devices using Z-Wave JS.
+  name: Inovelli LED Color Change
+  description: Create automations for Inovelli dimmers and switches to set their LED color. Specific to Z-Wave devices using Z-Wave JS and Zigbee devices using ZHA.
   domain: automation
   input:
     inovelli_dimmer:
@@ -39,9 +39,9 @@ blueprint:
             integration: zwave_js
             manufacturer: Inovelli
             model: LZW36
-    inovelli_2_in_1:
-      name: Inovelli 2-in-1 Switch
-      description: List of available Inovelli 2-in-1 switches.
+    inovelli_red_2_in_1:
+      name: Inovelli Red 2-in-1 Switch
+      description: List of available Inovelli Red 2-in-1 switches.
       default: {}
       selector:
         target:
@@ -49,6 +49,16 @@ blueprint:
             integration: zwave_js
             manufacturer: Inovelli
             model: VZW31-SN
+    inovelli_blue_2_in_1:
+      name: Inovelli Blue 2-in-1 Switch
+      description: List of available Inovelli Blue 2-in-1 switches.
+      default: []
+      selector:
+        target:
+          device:
+            integration: zha
+            manufacturer: Inovelli
+            model: VZM31-SN
 
     color:
       name: Color
@@ -76,7 +86,8 @@ variables:
   inovelli_dimmer: !input inovelli_dimmer
   inovelli_switch: !input inovelli_switch
   inovelli_fan_light_combo: !input inovelli_fan_light_combo
-  inovelli_2_in_1: !input inovelli_2_in_1
+  inovelli_red_2_in_1: !input inovelli_red_2_in_1
+  inovelli_blue_2_in_1: !input inovelli_blue_2_in_1 
 
 trigger: []
 
@@ -91,7 +102,8 @@ action:
           - inovelli_switch
           - inovelli_dimmer
           - inovelli_fan_light_combo
-          - inovelli_2_in_1
+          - inovelli_red_2_in_1
+          - inovelli_blue_2_in_1
         sequence:
           choose:
             - conditions: "{{ inovelli_dimmer|length > 0 and repeat.item == 'inovelli_dimmer' }}"
@@ -134,22 +146,47 @@ action:
                   value: "{{ color }}"
                 target: !input inovelli_fan_light_combo
 
-            - conditions: "{{ inovelli_2_in_1|length > 0  and repeat.item == 'inovelli_2_in_1' }}"
+            - conditions: "{{ inovelli_red_2_in_1|length > 0  and repeat.item == 'inovelli_red_2_in_1' }}"
               sequence:
-              # Set color for 2-in-1 on
+              # Set color for Red 2-in-1 on
               - service: zwave_js.multicast_set_value
                 data:
                   command_class: '112'
                   property: '95'
                   value: "{{ color }}"
-                target: !input inovelli_2_in_1
-
-            - conditions: "{{ inovelli_2_in_1|length > 0  and repeat.item == 'inovelli_2_in_1' }}"
-              sequence:
-              # Set color for 2-in-1 off
+                target: !input inovelli_red_2_in_1
+              # Set color for Red 2-in-1 off
               - service: zwave_js.multicast_set_value
                 data:
                   command_class: '112'
                   property: '96'
                   value: "{{ color }}"
-                target: !input inovelli_2_in_1
+                target: !input inovelli_red_2_in_1
+
+            - conditions: "{{ inovelli_blue_2_in_1|length > 0  and repeat.item == 'inovelli_blue_2_in_1' }}"
+              sequence:
+                - repeat:
+                    for_each: "{{ inovelli_blue_2_in_1.device_id }}"
+                    sequence:
+                      # Set color for Blue 2-in-1 off
+                      - service: zha.set_zigbee_cluster_attribute
+                        data:
+                          cluster_type: in
+                          endpoint_id: 1
+                          cluster_id: 64561
+                          attribute: 96
+                          manufacturer: "4655"
+                          ieee: >
+                            {{ (device_attr(repeat.item, "identifiers")|list).0.1 }}
+                          value: "{{ color }}"
+                      # Set color for Blue 2-in-1 on
+                      - service: zha.set_zigbee_cluster_attribute
+                        data:
+                          cluster_type: in
+                          endpoint_id: 1
+                          cluster_id: 64561
+                          attribute: 95
+                          manufacturer: "4655"
+                          ieee: >
+                            {{ (device_attr(repeat.item, "identifiers")|list).0.1 }}
+                          value: "{{ color }}"
