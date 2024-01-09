@@ -1,90 +1,96 @@
 blueprint:
   name: Inovelli LED Color Change
-  description: Create automations for Inovelli dimmers and switches to set their LED
-    color. Specific to Z-Wave devices using Z-Wave JS and Zigbee devices using ZHA.
+  description: Create automations for Inovelli dimmers and switches to set their LED color. Specific to Z-Wave devices using Z-Wave JS and Zigbee devices using ZHA.
   domain: automation
   input:
     inovelli_dimmer:
       name: Inovelli Dimmer
       description: List of available Inovelli dimmers.
-      default: []
+      default: {}
       selector:
-        device:
-          filter:
-          - integration: zwave_js
-            manufacturer: Inovelli
-            model: LZW31-SN
-          - integration: zwave_js
-            manufacturer: Inovelli
-            model: LZW31
-          multiple: true
+        target:
+          device:
+            - integration: zwave_js
+              manufacturer: Inovelli
+              model: LZW31-SN
+            - integration: zwave_js
+              manufacturer: Inovelli
+              model: LZW31
     inovelli_switch:
       name: Inovelli On/Off Switch
       description: List of available Inovelli On/Off switches.
-      default: []
+      default: {}
       selector:
-        device:
-          filter:
-          - integration: zwave_js
-            manufacturer: Inovelli
-            model: LZW30-SN
-          - integration: zwave_js
-            manufacturer: Inovelli
-            model: LZW30
-          multiple: true
+        target:
+          device:
+            - integration: zwave_js
+              manufacturer: Inovelli
+              model: LZW30-SN
+            - integration: zwave_js
+              manufacturer: Inovelli
+              model: LZW30
     inovelli_fan_light_combo:
       name: Inovelli Fan/Light Combo
       description: List of available Inovelli fan/fight combo switches.
-      default: []
+      default: {}
       selector:
-        device:
-          filter:
-          - integration: zwave_js
+        target:
+          device:
+            integration: zwave_js
             manufacturer: Inovelli
             model: LZW36
-          multiple: true
     inovelli_red_2_in_1:
       name: Inovelli Red 2-in-1 Switch
       description: List of available Inovelli Red 2-in-1 switches.
-      default: []
+      default: {}
       selector:
-        device:
-          filter:
-          - integration: zwave_js
+        target:
+          device:
+            integration: zwave_js
             manufacturer: Inovelli
             model: VZW31-SN
-          multiple: true
     inovelli_blue_2_in_1:
       name: Inovelli Blue 2-in-1 Switch
       description: List of available Inovelli Blue 2-in-1 switches.
       default: []
       selector:
-        device:
-          filter:
-          - integration: zha
+        target:
+          device:
+            integration: zha
             manufacturer: Inovelli
             model: VZM31-SN
-          multiple: true
+
     color:
       name: Color
-      description: 'Select the LED Color - Off: 0 | Red: 1 | Orange: 21 | Yellow:
-        42 | Green: 85 | Cyan: 127 | Teal: 145 | Blue: 170 | Purple: 195 | Light Pink:
-        220 | Pink: 234 | White: 255'
+      description: 
+        "Select the LED Color - 
+        Off: 0 |
+        Red: 1 |
+        Orange: 21 |
+        Yellow: 42 |
+        Green: 85 |
+        Cyan: 127 |
+        Teal: 145 |
+        Blue: 170 |
+        Purple: 195 |
+        Light Pink: 220 |
+        Pink: 234 |
+        White: 255"
       selector:
-        number:
-          min: 0.0
-          max: 255.0
-          mode: slider
-          step: 1.0
-  source_url: https://raw.githubusercontent.com/JDIacobbo/Home-Assistant/main/CONFIG/blueprints/automation/Inovelli_Set_LED_Color.yaml
+          number:
+              min: 0
+              max: 255
+
 variables:
   color: !input color
   inovelli_dimmer: !input inovelli_dimmer
   inovelli_switch: !input inovelli_switch
   inovelli_fan_light_combo: !input inovelli_fan_light_combo
   inovelli_red_2_in_1: !input inovelli_red_2_in_1
-  inovelli_blue_2_in_1: !input inovelli_blue_2_in_1
+  inovelli_blue_2_in_1: !input inovelli_blue_2_in_1 
+
 trigger: []
+
 action:
 - choose:
   - conditions:
@@ -93,89 +99,94 @@ action:
     sequence:
       repeat:
         for_each:
-        - inovelli_switch
-        - inovelli_dimmer
-        - inovelli_fan_light_combo
-        - inovelli_red_2_in_1
-        - inovelli_blue_2_in_1
+          - inovelli_switch
+          - inovelli_dimmer
+          - inovelli_fan_light_combo
+          - inovelli_red_2_in_1
+          - inovelli_blue_2_in_1
         sequence:
           choose:
-          - conditions: '{{ inovelli_dimmer|length > 0 and repeat.item == ''inovelli_dimmer''
-              }}'
-            sequence:
-            - service: zwave_js.multicast_set_value
-              data:
-                command_class: '112'
-                property: '13'
-                value: '{{ color }}'
-              target: !input inovelli_dimmer
-          - conditions: '{{ inovelli_switch|length > 0 and repeat.item == ''inovelli_switch''
-              }}'
-            sequence:
-            - service: zwave_js.multicast_set_value
-              data:
-                command_class: '112'
-                property: '5'
-                value: '{{ color }}'
-              target: !input inovelli_switch
-          - conditions: '{{ inovelli_fan_light_combo|length > 0 and repeat.item ==
-              ''inovelli_fan_light_combo'' }}'
-            sequence:
-            - service: zwave_js.multicast_set_value
-              data:
-                command_class: '112'
-                property: '18'
-                value: '{{ color }}'
-              target: !input inovelli_fan_light_combo
-          - conditions: '{{ inovelli_fan_light_combo|length > 0 and repeat.item ==
-              ''inovelli_fan_light_combo'' }}'
-            sequence:
-            - service: zwave_js.multicast_set_value
-              data:
-                command_class: '112'
-                property: '20'
-                value: '{{ color }}'
-              target: !input inovelli_fan_light_combo
-          - conditions: '{{ inovelli_red_2_in_1|length > 0  and repeat.item == ''inovelli_red_2_in_1''
-              }}'
-            sequence:
-            - service: zwave_js.multicast_set_value
-              data:
-                command_class: '112'
-                property: '95'
-                value: '{{ color }}'
-              target: !input inovelli_red_2_in_1
-            - service: zwave_js.multicast_set_value
-              data:
-                command_class: '112'
-                property: '96'
-                value: '{{ color }}'
-              target: !input inovelli_red_2_in_1
-          - conditions: '{{ inovelli_blue_2_in_1|length > 0  and repeat.item == ''inovelli_blue_2_in_1''
-              }}'
-            sequence:
-            - repeat:
-                for_each: '{{ inovelli_blue_2_in_1.device_id }}'
-                sequence:
-                - service: zha.set_zigbee_cluster_attribute
-                  data:
-                    cluster_type: in
-                    endpoint_id: 1
-                    cluster_id: 64561
-                    attribute: 96
-                    manufacturer: '4655'
-                    ieee: '{{ (device_attr(repeat.item, "identifiers")|list).0.1 }}
+            - conditions: "{{ inovelli_dimmer|length > 0 and repeat.item == 'inovelli_dimmer' }}"
+              sequence:
+              # Set color for dimmers
+              - service: zwave_js.multicast_set_value
+                data:
+                  command_class: '112'
+                  property: '13'
+                  value: "{{ color }}"
+                target: !input inovelli_dimmer
 
-                      '
-                    value: '{{ color }}'
-                - service: zha.set_zigbee_cluster_attribute
-                  data:
-                    cluster_type: in
-                    endpoint_id: 1
-                    cluster_id: 64561
-                    attribute: 95
-                    manufacturer: '4655'
-                    ieee: '{{ (device_attr(repeat.item, "identifiers")|list).0.1 }}
+            - conditions: "{{ inovelli_switch|length > 0 and repeat.item == 'inovelli_switch' }}"
+              sequence:
+              # Set color for switches
+              - service: zwave_js.multicast_set_value
+                data:
+                  command_class: '112'
+                  property: '5'
+                  value: "{{ color }}"
+                target: !input inovelli_switch
 
-                      '
-                    value: '{{ color }}'
+            - conditions: "{{ inovelli_fan_light_combo|length > 0 and repeat.item == 'inovelli_fan_light_combo' }}"
+              sequence:
+              # Set color for Fan/Light combo light
+              - service: zwave_js.multicast_set_value
+                data:
+                  command_class: '112'
+                  property: '18'
+                  value: "{{ color }}"
+                target: !input inovelli_fan_light_combo
+
+            - conditions: "{{ inovelli_fan_light_combo|length > 0 and repeat.item == 'inovelli_fan_light_combo' }}"
+              sequence:
+              # Set color for Fan/Light combo fan
+              - service: zwave_js.multicast_set_value
+                data:
+                  command_class: '112'
+                  property: '20'
+                  value: "{{ color }}"
+                target: !input inovelli_fan_light_combo
+
+            - conditions: "{{ inovelli_red_2_in_1|length > 0  and repeat.item == 'inovelli_red_2_in_1' }}"
+              sequence:
+              # Set color for Red 2-in-1 on
+              - service: zwave_js.multicast_set_value
+                data:
+                  command_class: '112'
+                  property: '95'
+                  value: "{{ color }}"
+                target: !input inovelli_red_2_in_1
+              # Set color for Red 2-in-1 off
+              - service: zwave_js.multicast_set_value
+                data:
+                  command_class: '112'
+                  property: '96'
+                  value: "{{ color }}"
+                target: !input inovelli_red_2_in_1
+
+            - conditions: "{{ inovelli_blue_2_in_1|length > 0  and repeat.item == 'inovelli_blue_2_in_1' }}"
+              sequence:
+                - repeat:
+                    for_each: "{{ inovelli_blue_2_in_1.device_id }}"
+                    sequence:
+                      # Set color for Blue 2-in-1 off
+                      - service: zha.set_zigbee_cluster_attribute
+                        data:
+                          cluster_type: in
+                          endpoint_id: 1
+                          cluster_id: 64561
+                          attribute: 96
+                          manufacturer: "4655"
+                          ieee: >
+                            {{ (device_attr(repeat.item, "identifiers")|list).0.1 }}
+                          value: "{{ color }}"
+                      # Set color for Blue 2-in-1 on
+                      - service: zha.set_zigbee_cluster_attribute
+                        data:
+                          cluster_type: in
+                          endpoint_id: 1
+                          cluster_id: 64561
+                          attribute: 95
+                          manufacturer: "4655"
+                          ieee: >
+                            {{ (device_attr(repeat.item, "identifiers")|list).0.1 }}
+                          value: "{{ color }}"
