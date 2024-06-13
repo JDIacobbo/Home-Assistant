@@ -1,0 +1,172 @@
+blueprint:
+  name: Inovelli Blue Pride
+  description: Create automations for Inovelli Blue 2-1 to set their LED color to pride colors. Specific to Zigbee devices using ZHA.
+  domain: automation
+  input:
+    inovelli_blue_2_in_1:
+      name: Inovelli Blue 2-in-1 Switch
+      description: List of available Inovelli Blue 2-in-1 switches.
+      default: {}
+      selector:
+        target:
+          device:
+            integration: zha
+            manufacturer: Inovelli
+            model: VZM31-SN
+
+variables:
+  inovelli_blue_2_in_1: !input inovelli_blue_2_in_1 
+
+trigger: []
+
+action:
+- choose:
+  - conditions:
+    - condition: template
+      value_template: 'True'
+    sequence:
+      repeat:
+        for_each: "{{ inovelli_blue_2_in_1.device_id }}"
+        sequence:
+          # Set color for Blue 2-in-1 off
+          - service: zha.set_zigbee_cluster_attribute
+            data:
+              cluster_type: in
+              endpoint_id: 1
+              cluster_id: 64561
+              attribute: 61
+              manufacturer: "4655"
+              ieee: >
+                {{ (device_attr(repeat.item, "identifiers")|list).0.1 }}
+              value: 200
+          - service: zha.set_zigbee_cluster_attribute
+            data:
+              cluster_type: in
+              endpoint_id: 1
+              cluster_id: 64561
+              attribute: 66
+              manufacturer: "4655"
+              ieee: >
+                {{ (device_attr(repeat.item, "identifiers")|list).0.1 }}
+              value: 180
+          - service: zha.set_zigbee_cluster_attribute
+            data:
+              cluster_type: in
+              endpoint_id: 1
+              cluster_id: 64561
+              attribute: 71
+              manufacturer: "4655"
+              ieee: >
+                {{ (device_attr(repeat.item, "identifiers")|list).0.1 }}
+              value: 165
+          - service: zha.set_zigbee_cluster_attribute
+            data:
+              cluster_type: in
+              endpoint_id: 1
+              cluster_id: 64561
+              attribute: 76
+              manufacturer: "4655"
+              ieee: >
+                {{ (device_attr(repeat.item, "identifiers")|list).0.1 }}
+              value: 90
+          - service: zha.set_zigbee_cluster_attribute
+            data:
+              cluster_type: in
+              endpoint_id: 1
+              cluster_id: 64561
+              attribute: 81
+              manufacturer: "4655"
+              ieee: >
+                {{ (device_attr(repeat.item, "identifiers")|list).0.1 }}
+              value: 45
+          - service: zha.set_zigbee_cluster_attribute
+            data:
+              cluster_type: in
+              endpoint_id: 1
+              cluster_id: 64561
+              attribute: 86
+              manufacturer: "4655"
+              ieee: >
+                {{ (device_attr(repeat.item, "identifiers")|list).0.1 }}
+              value: 0
+          - service: zha.set_zigbee_cluster_attribute
+            data:
+              cluster_type: in
+              endpoint_id: 1
+              cluster_id: 64561
+              attribute: 91
+              manufacturer: "4655"
+              ieee: >
+                {{ (device_attr(repeat.item, "identifiers")|list).0.1 }}
+              value: 0
+          # Set color for Blue 2-in-1 on
+          - service: zha.set_zigbee_cluster_attribute
+            data:
+              cluster_type: in
+              endpoint_id: 1
+              cluster_id: 64561
+              attribute: 60
+              manufacturer: "4655"
+              ieee: >
+                {{ (device_attr(repeat.item, "identifiers")|list).0.1 }}
+              value: 200
+          - service: zha.set_zigbee_cluster_attribute
+            data:
+              cluster_type: in
+              endpoint_id: 1
+              cluster_id: 64561
+              attribute: 65
+              manufacturer: "4655"
+              ieee: >
+                {{ (device_attr(repeat.item, "identifiers")|list).0.1 }}
+              value: 180
+          - service: zha.set_zigbee_cluster_attribute
+            data:
+              cluster_type: in
+              endpoint_id: 1
+              cluster_id: 64561
+              attribute: 70
+              manufacturer: "4655"
+              ieee: >
+                {{ (device_attr(repeat.item, "identifiers")|list).0.1 }}
+              value: 165
+          - service: zha.set_zigbee_cluster_attribute
+            data:
+              cluster_type: in
+              endpoint_id: 1
+              cluster_id: 64561
+              attribute: 75
+              manufacturer: "4655"
+              ieee: >
+                {{ (device_attr(repeat.item, "identifiers")|list).0.1 }}
+              value: 90
+          - service: zha.set_zigbee_cluster_attribute
+            data:
+              cluster_type: in
+              endpoint_id: 1
+              cluster_id: 64561
+              attribute: 80
+              manufacturer: "4655"
+              ieee: >
+                {{ (device_attr(repeat.item, "identifiers")|list).0.1 }}
+              value: 45
+          - service: zha.set_zigbee_cluster_attribute
+            data:
+              cluster_type: in
+              endpoint_id: 1
+              cluster_id: 64561
+              attribute: 85
+              manufacturer: "4655"
+              ieee: >
+                {{ (device_attr(repeat.item, "identifiers")|list).0.1 }}
+              value: 0
+          - service: zha.set_zigbee_cluster_attribute
+            data:
+              cluster_type: in
+              endpoint_id: 1
+              cluster_id: 64561
+              attribute: 90
+              manufacturer: "4655"
+              ieee: >
+                {{ (device_attr(repeat.item, "identifiers")|list).0.1 }}
+              value: 0
