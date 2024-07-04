@@ -1,0 +1,327 @@
+blueprint:
+  name: Inovelli Blue LED Color Change Individual LEDs with Selectors
+  description: Create automations for Inovelli Blue switches to set their infdividual LED color. Specific to Zigbee devices using ZHA.
+  domain: automation
+  input:
+    inovelli_blue_2_in_1:
+      name: Inovelli Blue 2-in-1 Switch
+      description: List of available Inovelli Blue 2-in-1 switches.
+      default: []
+      selector:
+        target:
+          device:
+            integration: zha
+            manufacturer: Inovelli
+            model: VZM31-SN
+
+    led1:
+      name: LED 1
+      description: 
+        "Select the LED Color - 
+        Off: 0 |
+        Red: 1 |
+        Orange: 21 |
+        Yellow: 42 |
+        Green: 85 |
+        Cyan: 127 |
+        Teal: 145 |
+        Blue: 170 |
+        Purple: 195 |
+        Light Pink: 220 |
+        Pink: 234 |
+        White: 255"
+      selector:
+          number:
+              min: 0
+              max: 255
+    led2:
+      name: LED 2
+      description: 
+        "Select the LED Color - 
+        Off: 0 |
+        Red: 1 |
+        Orange: 21 |
+        Yellow: 42 |
+        Green: 85 |
+        Cyan: 127 |
+        Teal: 145 |
+        Blue: 170 |
+        Purple: 195 |
+        Light Pink: 220 |
+        Pink: 234 |
+        White: 255"
+      selector:
+          number:
+              min: 0
+              max: 255
+    led3:
+      name: LED 3
+      description: 
+        "Select the LED Color - 
+        Off: 0 |
+        Red: 1 |
+        Orange: 21 |
+        Yellow: 42 |
+        Green: 85 |
+        Cyan: 127 |
+        Teal: 145 |
+        Blue: 170 |
+        Purple: 195 |
+        Light Pink: 220 |
+        Pink: 234 |
+        White: 255"
+      selector:
+          number:
+              min: 0
+              max: 255
+    led4:
+      name: LED 4
+      description: 
+        "Select the LED Color - 
+        Off: 0 |
+        Red: 1 |
+        Orange: 21 |
+        Yellow: 42 |
+        Green: 85 |
+        Cyan: 127 |
+        Teal: 145 |
+        Blue: 170 |
+        Purple: 195 |
+        Light Pink: 220 |
+        Pink: 234 |
+        White: 255"
+      selector:
+          number:
+              min: 0
+              max: 255
+    led5:
+      name: LED 5
+      description: 
+        "Select the LED Color - 
+        Off: 0 |
+        Red: 1 |
+        Orange: 21 |
+        Yellow: 42 |
+        Green: 85 |
+        Cyan: 127 |
+        Teal: 145 |
+        Blue: 170 |
+        Purple: 195 |
+        Light Pink: 220 |
+        Pink: 234 |
+        White: 255"
+      selector:
+          number:
+              min: 0
+              max: 255
+    led6:
+      name: LED 6
+      description: 
+        "Select the LED Color - 
+        Off: 0 |
+        Red: 1 |
+        Orange: 21 |
+        Yellow: 42 |
+        Green: 85 |
+        Cyan: 127 |
+        Teal: 145 |
+        Blue: 170 |
+        Purple: 195 |
+        Light Pink: 220 |
+        Pink: 234 |
+        White: 255"
+      selector:
+          number:
+              min: 0
+              max: 255
+    led7:
+      name: LED 7
+      description: 
+        "Select the LED Color - 
+        Off: 0 |
+        Red: 1 |
+        Orange: 21 |
+        Yellow: 42 |
+        Green: 85 |
+        Cyan: 127 |
+        Teal: 145 |
+        Blue: 170 |
+        Purple: 195 |
+        Light Pink: 220 |
+        Pink: 234 |
+        White: 255"
+      selector:
+          number:
+              min: 0
+              max: 255
+
+variables:
+  led1: !input led1
+  led2: !input led2
+  led3: !input led3
+  led4: !input led4
+  led5: !input led5
+  led6: !input led6
+  led7: !input led7
+  inovelli_blue_2_in_1: !input inovelli_blue_2_in_1 
+
+trigger: []
+
+action:
+- choose:
+  - conditions:
+    - condition: template
+      value_template: 'True'
+    sequence:
+      repeat:
+        for_each:
+          - inovelli_blue_2_in_1
+        sequence:
+          choose:
+            - conditions: "{{ inovelli_blue_2_in_1|length > 0  and repeat.item == 'inovelli_blue_2_in_1' }}"
+              sequence:
+                - repeat:
+                    for_each: "{{ inovelli_blue_2_in_1.device_id }}"
+                    sequence:
+                      # Set color for Blue 2-in-1 off
+                      - service: zha.set_zigbee_cluster_attribute
+                        data:
+                          cluster_type: in
+                          endpoint_id: 1
+                          cluster_id: 64561
+                          attribute: 61
+                          manufacturer: "4655"
+                          ieee: >
+                            {{ (device_attr(repeat.item, "identifiers")|list).0.1 }}
+                          value: "{{ led1 }}"
+                      - service: zha.set_zigbee_cluster_attribute
+                        data:
+                          cluster_type: in
+                          endpoint_id: 1
+                          cluster_id: 64561
+                          attribute: 66
+                          manufacturer: "4655"
+                          ieee: >
+                            {{ (device_attr(repeat.item, "identifiers")|list).0.1 }}
+                          value: "{{ led2 }}"
+                      - service: zha.set_zigbee_cluster_attribute
+                        data:
+                          cluster_type: in
+                          endpoint_id: 1
+                          cluster_id: 64561
+                          attribute: 71
+                          manufacturer: "4655"
+                          ieee: >
+                            {{ (device_attr(repeat.item, "identifiers")|list).0.1 }}
+                          value: "{{ led3 }}"
+                      - service: zha.set_zigbee_cluster_attribute
+                        data:
+                          cluster_type: in
+                          endpoint_id: 1
+                          cluster_id: 64561
+                          attribute: 76
+                          manufacturer: "4655"
+                          ieee: >
+                            {{ (device_attr(repeat.item, "identifiers")|list).0.1 }}
+                          value: "{{ led4 }}"
+                      - service: zha.set_zigbee_cluster_attribute
+                        data:
+                          cluster_type: in
+                          endpoint_id: 1
+                          cluster_id: 64561
+                          attribute: 81
+                          manufacturer: "4655"
+                          ieee: >
+                            {{ (device_attr(repeat.item, "identifiers")|list).0.1 }}
+                          value: "{{ led5 }}"
+                      - service: zha.set_zigbee_cluster_attribute
+                        data:
+                          cluster_type: in
+                          endpoint_id: 1
+                          cluster_id: 64561
+                          attribute: 86
+                          manufacturer: "4655"
+                          ieee: >
+                            {{ (device_attr(repeat.item, "identifiers")|list).0.1 }}
+                          value: "{{ led6 }}"
+                      - service: zha.set_zigbee_cluster_attribute
+                        data:
+                          cluster_type: in
+                          endpoint_id: 1
+                          cluster_id: 64561
+                          attribute: 91
+                          manufacturer: "4655"
+                          ieee: >
+                            {{ (device_attr(repeat.item, "identifiers")|list).0.1 }}
+                          value: "{{ led7 }}"
+                      # Set color for Blue 2-in-1 on
+                      - service: zha.set_zigbee_cluster_attribute
+                        data:
+                          cluster_type: in
+                          endpoint_id: 1
+                          cluster_id: 64561
+                          attribute: 60
+                          manufacturer: "4655"
+                          ieee: >
+                            {{ (device_attr(repeat.item, "identifiers")|list).0.1 }}
+                          value: "{{ led1 }}"
+                      - service: zha.set_zigbee_cluster_attribute
+                        data:
+                          cluster_type: in
+                          endpoint_id: 1
+                          cluster_id: 64561
+                          attribute: 65
+                          manufacturer: "4655"
+                          ieee: >
+                            {{ (device_attr(repeat.item, "identifiers")|list).0.1 }}
+                          value: "{{ led2 }}"
+                      - service: zha.set_zigbee_cluster_attribute
+                        data:
+                          cluster_type: in
+                          endpoint_id: 1
+                          cluster_id: 64561
+                          attribute: 70
+                          manufacturer: "4655"
+                          ieee: >
+                            {{ (device_attr(repeat.item, "identifiers")|list).0.1 }}
+                          value: "{{ led3 }}"
+                      - service: zha.set_zigbee_cluster_attribute
+                        data:
+                          cluster_type: in
+                          endpoint_id: 1
+                          cluster_id: 64561
+                          attribute: 75
+                          manufacturer: "4655"
+                          ieee: >
+                            {{ (device_attr(repeat.item, "identifiers")|list).0.1 }}
+                          value: "{{ led4 }}"
+                      - service: zha.set_zigbee_cluster_attribute
+                        data:
+                          cluster_type: in
+                          endpoint_id: 1
+                          cluster_id: 64561
+                          attribute: 80
+                          manufacturer: "4655"
+                          ieee: >
+                            {{ (device_attr(repeat.item, "identifiers")|list).0.1 }}
+                          value: "{{ led5 }}"
+                      - service: zha.set_zigbee_cluster_attribute
+                        data:
+                          cluster_type: in
+                          endpoint_id: 1
+                          cluster_id: 64561
+                          attribute: 85
+                          manufacturer: "4655"
+                          ieee: >
+                            {{ (device_attr(repeat.item, "identifiers")|list).0.1 }}
+                          value: "{{ led6 }}"
+                      - service: zha.set_zigbee_cluster_attribute
+                        data:
+                          cluster_type: in
+                          endpoint_id: 1
+                          cluster_id: 64561
+                          attribute: 90
+                          manufacturer: "4655"
+                          ieee: >
+                            {{ (device_attr(repeat.item, "identifiers")|list).0.1 }}
+                          value: "{{ led7 }}"
