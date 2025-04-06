@@ -107,7 +107,6 @@ action:
                         command_class: "112"
                         property: "13"
                         value: "{{ color }}"
-                      target:
                         device_id: !input inovelli_dimmer
         - repeat:
             for_each: 
@@ -121,7 +120,6 @@ action:
                         command_class: "112"
                         property: "5"
                         value: "{{ color }}"
-                      target:
                         device_id: !input inovelli_switch
         - repeat:
             for_each: 
@@ -135,14 +133,12 @@ action:
                         command_class: "112"
                         property: "18"
                         value: "{{ color }}"
-                      target:
                         device_id: !input inovelli_fan_light_combo
                     - action: zwave_js.multicast_set_value
                       data:
                         command_class: "112"
                         property: "20"
                         value: "{{ color }}"
-                      target:
                         device_id: !input inovelli_fan_light_combo
         - repeat:
             for_each: 
@@ -156,14 +152,12 @@ action:
                         command_class: "112"
                         property: "95"
                         value: "{{ color }}"
-                      target:
                         device_id: !input inovelli_red_2_in_1
                     - action: zwave_js.multicast_set_value
                       data:
                         command_class: "112"
                         property: "96"
                         value: "{{ color }}"
-                      target:
                         device_id: !input inovelli_red_2_in_1
         - repeat:
             for_each: "{{ inovelli_blue_2_in_1 }}"
