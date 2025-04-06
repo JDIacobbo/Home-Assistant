@@ -1,7 +1,7 @@
 blueprint:
   homeassistant:
     min_version: "2024.10.0"
-  name: 1 - Inovelli LED Color Change Test
+  name: Inovelli LED Color Change
   description:
     Create automations for Inovelli dimmers and switches to set their LED
     color. Specific to Z-Wave devices using Z-Wave JS and Zigbee devices using ZHA.
